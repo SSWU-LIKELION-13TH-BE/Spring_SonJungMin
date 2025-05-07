@@ -1,7 +1,9 @@
 package com.likelion.session.Controller.Calculator;
 
 import com.likelion.session.dto.Calculator.request.CalculatorAddRequest;
+import com.likelion.session.dto.Calculator.request.CalculatorDivideRequest;
 import com.likelion.session.dto.Calculator.request.CalculatorMultiplyRequest;
+import com.likelion.session.dto.Calculator.request.CalculatorSubtractRequest;
 import com.likelion.session.service.Calculator.CalculatorService;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,16 @@ public class CalculatorController {
     //서비스 사용
     public int multiplyTwoNumbers(@RequestBody CalculatorMultiplyRequest request){
         return calculatorService.multiply(request.getNumber1(), request.getNumber2());
+    }
+
+    @GetMapping("/substract")
+    public int substractTwoNumbers(@RequestBody CalculatorSubtractRequest request){
+        return calculatorService.subtract(request.getNumber1(), request.getNumber2());
+    }
+
+    @GetMapping("/divide")
+    public int divideTwoNumbers(@RequestBody CalculatorDivideRequest request){
+        return calculatorService.divide(request.getNumber1(), request.getNumber2());
     }
 
 
