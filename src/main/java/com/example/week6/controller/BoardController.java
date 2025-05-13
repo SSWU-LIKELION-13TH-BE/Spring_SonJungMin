@@ -31,6 +31,11 @@ public class BoardController {
         boardService.postBoard(board);
     }
 
+    @PostMapping("/updateBoard")
+    public void updateBoard(@RequestBody BoardDTO boardDTO){
+        boardService.putBoard(boardDTO);
+    }
+
     @DeleteMapping("/deleteBoard{boardId}")
     public void deleteBoard(@PathVariable(name="boardId") Long boardID) {
         boardService.deleteBoard(boardID);
