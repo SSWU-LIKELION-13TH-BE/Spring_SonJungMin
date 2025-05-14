@@ -1,10 +1,12 @@
 package com.example.week6.entity;
 //import ...
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -33,4 +35,13 @@ public class Board {
 
     @PrePersist //jpa의 콜백 메서드. 엔터티가 처음 저장되기 직전에 실행. 즉, 새로운 row 생성시 현재 날짜 저장
     protected void onCreate() { this.postDate = LocalDate.now(); }
+
+//    @OneToMany
+//    @JoinColumn(name = "comment_id")
+//    private Comment comment;
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OrderBy(value = "createdDate asc") // 댓글 정렬
+    @JsonManagedReference
+    private List<Comment> comments;
 }

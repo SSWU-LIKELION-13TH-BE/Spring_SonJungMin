@@ -4,6 +4,7 @@ import com.example.week6.entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board,Integer> {
@@ -16,4 +17,6 @@ public interface BoardRepository extends JpaRepository<Board,Integer> {
 
     //게시글 삭제하기 delete (delete)
     void deleteByBoardId(Long boardId);
+
+    List<Board> boardId(Long boardId);
 }
