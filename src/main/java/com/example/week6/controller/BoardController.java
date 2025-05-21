@@ -5,10 +5,12 @@ import com.example.week6.entity.Board;
 import com.example.week6.repository.BoardRepository;
 import com.example.week6.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
@@ -40,4 +42,24 @@ public class BoardController {
     public void deleteBoard(@PathVariable(name="boardId") Long boardID) {
         boardService.deleteBoard(boardID);
     }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@ModelAttribute BoardDTO imageBoardDTO){
+        try {
+            BoardDTO request = BoardDTO.builder()
+                    .title(imageBoardDTO.getTitle())
+                    .content(imageBoardDTO.getContent())
+                    .image(imageBoardDTO.getImage())
+                    .writer(imageBoardDTO.getWriter())
+                    .build();
+
+            boardService.ImageBoard(request);
+
+            return ResponseEntity.ok("파일 업로드 성공");
+        } catch (Exception e) {
+            log.error("파일 업로드 실패", e);
+            return ResponseEntity.status(400).build();
+        }
+    }
+
 }

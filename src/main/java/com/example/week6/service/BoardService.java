@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.beans.Transient;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final S3Service s3Service;
 
     public Optional<Board> findByBoardId(Long boardId) {
         return boardRepository.findByBoardId(boardId);
@@ -47,5 +49,20 @@ public class BoardService {
         boardRepository.deleteByBoardId(boardId);
     }
 
+    @Transactional
+    //이미지 포함 게시글 생성
+    public void ImageBoard(BoardDTO request) throws IOException {
+
+        String savedImageURI = s3Service.upload(request.getImage());
+
+        Board board = Board.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .writer(request.getWriter())
+                .image(savedImageURI)
+                .build();
+
+        boardRepository.save(board);
+    }
 }
 
