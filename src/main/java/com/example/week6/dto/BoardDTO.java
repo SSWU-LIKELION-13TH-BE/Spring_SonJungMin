@@ -1,9 +1,7 @@
 package com.example.week6.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -11,6 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 
 public class BoardDTO {
     private Long boardId;
@@ -18,4 +17,5 @@ public class BoardDTO {
     private String content;
     private String writer;
     private Date postDate;
+    private MultipartFile image;
 }

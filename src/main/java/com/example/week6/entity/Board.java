@@ -36,6 +36,9 @@ public class Board {
     @PrePersist //jpa의 콜백 메서드. 엔터티가 처음 저장되기 직전에 실행. 즉, 새로운 row 생성시 현재 날짜 저장
     protected void onCreate() { this.postDate = LocalDate.now(); }
 
+    @Column
+    private String image;
+
 //    @OneToMany
 //    @JoinColumn(name = "comment_id")
 //    private Comment comment;
