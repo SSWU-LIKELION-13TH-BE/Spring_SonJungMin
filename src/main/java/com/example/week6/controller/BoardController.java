@@ -4,7 +4,9 @@ import com.example.week6.dto.BoardDTO;
 import com.example.week6.entity.Board;
 import com.example.week6.repository.BoardRepository;
 import com.example.week6.service.BoardService;
+import com.example.week6.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 public class BoardController {
     private final BoardService boardService;
+    private final S3Service s3Service;
 
     @GetMapping("/getBoard")
     public Optional<Board> getBoard(@RequestParam(name = "boardId") Long boardId) {
@@ -61,5 +64,27 @@ public class BoardController {
             return ResponseEntity.status(400).build();
         }
     }
+
+    @GetMapping("/{boardId}/image")
+    public ResponseEntity<String> getFileUrl(@PathVariable Long boardId) {
+        try {
+            String imageUrl = boardService.getFileUrl(boardId);
+            return ResponseEntity.ok(imageUrl);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/file")
+    public ResponseEntity<String> deleteFile(@RequestParam String url) {
+        try {
+            s3Service.deleteFile(url);  // 네가 작성한 메서드 호출
+            return ResponseEntity.ok("삭제 성공");
+        } catch (Exception e) {
+            log.error("파일 삭제 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패");
+        }
+    }
+
 
 }
