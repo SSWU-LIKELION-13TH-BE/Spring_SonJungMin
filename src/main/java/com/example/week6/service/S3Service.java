@@ -1,5 +1,6 @@
 package com.example.week6.service;
 
+import com.example.week6.entity.Board;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -43,4 +45,40 @@ public class S3Service {
 
         return s3Client.utilities().getUrl(request).toString(); // 업로드된 파일 주소 리턴
     }
+
+    public String getFileUrl(String fileName) {
+        GetUrlRequest request = GetUrlRequest.builder()
+                .bucket(bucket)
+                .key(fileName)
+                .build();
+        return s3Client.utilities().getUrl(request).toString();
+    }
+
+    public String getKeyUrl(String fullUrl) {
+        if (fullUrl == null || !fullUrl.startsWith("https://")) {
+            return fullUrl;
+        }
+
+        return fullUrl.substring(fullUrl.indexOf(".com/") + 5);
+    }
+
+    public void deleteFile(String fullUrl) {
+
+        if (fullUrl == null || fullUrl.isEmpty()) {
+            return;  // 예외 방지
+        }
+
+        String key = getKeyUrl(fullUrl);
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
+    }
+
+
+
+
 }
+

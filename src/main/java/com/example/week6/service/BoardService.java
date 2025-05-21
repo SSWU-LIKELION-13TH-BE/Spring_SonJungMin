@@ -44,10 +44,25 @@ public class BoardService {
     }
 
 
-    @Transactional
-    public void deleteBoard(Long boardId) {
-        boardRepository.deleteByBoardId(boardId);
-    }
+//    @Transactional
+//    public void deleteBoard(Long boardId) {
+//        boardRepository.deleteByBoardId(boardId);
+//    }
+
+//    @Transactional
+//    public void deleteUpload(Long boardId) {
+//        Board board = boardRepository.findById(boardId)
+//                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+//
+//        // S3 이미지 삭제
+//        if (board.getImageFileName() != null) {
+//            s3Service.deleteFile(board.getImageFileName());
+//        }
+//
+//        // 게시글 삭제
+//        boardRepository.delete(board);
+//    }
+
 
     @Transactional
     //이미지 포함 게시글 생성
@@ -63,6 +78,28 @@ public class BoardService {
                 .build();
 
         boardRepository.save(board);
+    }
+
+    @Transactional
+    public String getFileUrl(Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+
+        String fileName = board.getImage();
+        return s3Service.getFileUrl(fileName);
+    }
+
+    @Transactional
+    // 일반 게시물 삭제와 사진 게시물 삭제를 하나로 합쳤다
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+
+        if(board.getImage() != null && !board.getImage().isEmpty()) {
+            s3Service.deleteFile(board.getImage());
+        }
+
+        boardRepository.deleteByBoardId(boardId);
     }
 }
 

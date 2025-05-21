@@ -18,4 +18,6 @@ public class BoardDTO {
     private String writer;
     private Date postDate;
     private MultipartFile image;
+    private String imageFileName;
+    private String fileKey;
 }
