@@ -1,8 +1,7 @@
-package com.example.week6.repository;
+package com.example.week9.repository;
 
-import com.example.week6.entity.Board;
+import com.example.week9.entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 
 import java.util.List;
 import java.util.Optional;
