@@ -1,5 +1,7 @@
 package com.example.week9.controller.user;
 
+import com.example.week9.apiPayload.code.SuccessStatus;
+import com.example.week9.apiPayload.dto.ApiResponse;
 import com.example.week9.dto.user.request.UserLoginRequestDTO;
 import com.example.week9.dto.user.request.UserPasswordRequestDTO;
 import com.example.week9.dto.user.request.UserSignupRequestDTO;
@@ -9,13 +11,15 @@ import com.example.week9.entity.user.User;
 import com.example.week9.security.CustomUserDetails;
 import com.example.week9.service.user.PasswordCheckService;
 import com.example.week9.service.user.UserService;
+import com.example.week9.test.dto.SampleRequestDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/auth")
 public class UserController {
     private final UserService userService;
     private final PasswordCheckService passwordCheckService;
@@ -26,11 +30,21 @@ public class UserController {
     }
 
     // ✅ 회원가입
+//    @PostMapping("/signup")
+//    public ResponseEntity<String> signup(@RequestBody UserSignupRequestDTO requestDto){
+//        userService.signup(requestDto);
+//        return ResponseEntity.ok("회원가입 성공!");
+//    }
+
+    //회원가입 유효성 검사
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserSignupRequestDTO requestDto){
+    public ApiResponse<String> signup(@Valid @RequestBody UserSignupRequestDTO requestDto) {
+        String userId = requestDto.getUserId();
+        userService.checkUser(userId);
         userService.signup(requestDto);
-        return ResponseEntity.ok("회원가입 성공!");
+        return ApiResponse.of(SuccessStatus._OK, "회원가입 되셨습니다.");
     }
+
     // ✅ 로그인
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponseDTO> login(@RequestBody UserLoginRequestDTO requestDto){
@@ -66,6 +80,8 @@ public class UserController {
         userService.updatePassword(user.getUserId(), requestDto.getNewPassword());
         return ResponseEntity.ok("비밀번호 변경 완료");
     }
+
+
 
 }
 

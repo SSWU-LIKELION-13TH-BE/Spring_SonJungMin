@@ -1,5 +1,7 @@
 package com.example.week9.service.user;
 
+import com.example.week9.apiPayload.code.ErrorStatus;
+import com.example.week9.apiPayload.exception.GeneralException;
 import com.example.week9.dto.user.request.UserLoginRequestDTO;
 import com.example.week9.dto.user.request.UserSignupRequestDTO;
 import com.example.week9.dto.user.response.UserLoginResponseDTO;
@@ -13,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -67,24 +71,14 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
-//    public CustomUserDetailsService(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
-//
-//
-//
-//    public void doSomething() {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth != null && auth.isAuthenticated()) {
-//            Object principal = auth.getPrincipal();
-//
-//            if (principal instanceof UserDetails) {
-//                UserDetails userDetails = (UserDetails) principal;
-//                String userId = userDetails.getUsername(); // 또는 userId
-//                // 여기에 유저 정보 활용 로직 작성
-//
-//            }
-//        }
-//    }
-}
+    public void checkUser(String userId) {
+        Optional<User> user = userRepository.findByUserId(userId);
 
+        if (user.isPresent()) {
+            throw new GeneralException(ErrorStatus.USERNAME_ALREADY_EXISTS);
+        }
+    }
+
+
+
+}

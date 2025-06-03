@@ -40,4 +40,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         e.printStackTrace(); // 서버 로그에 예외 내용 출력
         return new ResponseEntity<>(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // ExistsUserException 처리
+//    @ExceptionHandler(ExistsUserException.class)
+//    public ResponseEntity<ApiResponse<Object>> handleCustomException(ExistsUserException e) {
+//        ErrorReasonDTO reason = e.getErrorReasonHttpStatus();
+//        return new ResponseEntity<>(ApiResponse.onFailure(ErrorStatus.USERNAME_ALREADY_EXISTS.getCode(), reason.getMessage(), null), reason.getHttpStatus());
+//    }
 }
