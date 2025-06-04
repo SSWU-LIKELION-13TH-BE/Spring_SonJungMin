@@ -65,26 +65,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/user/password")
-//    public ResponseEntity<?> getPassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserPasswordRequestDTO requestDto ){
-//        User user = userDetails.getUser();
-//
-//        if (!passwordCheckService.checkPassword(user, requestDto.getCurrentPassword())) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("현재 비밀번호가 일치하지 않습니다.");
-//        }
-//
-//        if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
-//            return ResponseEntity.badRequest().body("새 비밀번호와 확인 비밀번호가 다릅니다.");
-//        }
-//
-//        userService.updatePassword(user.getUserId(), requestDto.getNewPassword());
-//        return ResponseEntity.ok("비밀번호 변경 완료");
-//    }
-
-    public ApiResponse<String> validate(@Valid @RequestBody SampleRequestDTO dto) {
-        return ApiResponse.of(SuccessStatus._OK, "통과되었습니다");
-    }
-
     @PostMapping("/user/password")
     public ApiResponse<String> getPassword(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserPasswordRequestDTO requestDto ){
         User user = userDetails.getUser();
