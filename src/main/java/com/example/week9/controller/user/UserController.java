@@ -19,7 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class UserController {
     private final UserService userService;
     private final PasswordCheckService passwordCheckService;
@@ -29,7 +29,7 @@ public class UserController {
         this.passwordCheckService = passwordCheckService;
     }
 
-    // ✅ 회원가입
+//     ✅ 회원가입
 //    @PostMapping("/signup")
 //    public ResponseEntity<String> signup(@RequestBody UserSignupRequestDTO requestDto){
 //        userService.signup(requestDto);
@@ -37,7 +37,7 @@ public class UserController {
 //    }
 
     //회원가입 유효성 검사
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ApiResponse<String> signup(@Valid @RequestBody UserSignupRequestDTO requestDto) {
         String userId = requestDto.getUserId();
         userService.checkUser(userId);
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     // ✅ 로그인
-    @PostMapping("/login")
+    @PostMapping("/users/login")
     public ResponseEntity<UserLoginResponseDTO> login(@RequestBody UserLoginRequestDTO requestDto){
         UserLoginResponseDTO response = userService.login(requestDto);
         return ResponseEntity.ok(response);
@@ -55,7 +55,7 @@ public class UserController {
     /* 사용자 프로필 반환 API */
     /* @AuthenticationPrincipal 애노테이션 사용 -> userId GET */
 
-    @GetMapping("/me")
+    @GetMapping("/users/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         // 현재 인증된 사용자 정보 가져오기
         User user = userDetails.getUser();
@@ -65,22 +65,36 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/password")
-    public ResponseEntity<?> getPassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserPasswordRequestDTO requestDto ){
-        User user = userDetails.getUser();
+//    @PostMapping("/user/password")
+//    public ResponseEntity<?> getPassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserPasswordRequestDTO requestDto ){
+//        User user = userDetails.getUser();
+//
+//        if (!passwordCheckService.checkPassword(user, requestDto.getCurrentPassword())) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("현재 비밀번호가 일치하지 않습니다.");
+//        }
+//
+//        if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
+//            return ResponseEntity.badRequest().body("새 비밀번호와 확인 비밀번호가 다릅니다.");
+//        }
+//
+//        userService.updatePassword(user.getUserId(), requestDto.getNewPassword());
+//        return ResponseEntity.ok("비밀번호 변경 완료");
+//    }
 
-        if (!passwordCheckService.checkPassword(user, requestDto.getCurrentPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("현재 비밀번호가 일치하지 않습니다.");
-        }
-
-        if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
-            return ResponseEntity.badRequest().body("새 비밀번호와 확인 비밀번호가 다릅니다.");
-        }
-
-        userService.updatePassword(user.getUserId(), requestDto.getNewPassword());
-        return ResponseEntity.ok("비밀번호 변경 완료");
+    public ApiResponse<String> validate(@Valid @RequestBody SampleRequestDTO dto) {
+        return ApiResponse.of(SuccessStatus._OK, "통과되었습니다");
     }
 
+    @PostMapping("/user/password")
+    public ApiResponse<String> getPassword(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserPasswordRequestDTO requestDto ){
+        User user = userDetails.getUser();
+
+        passwordCheckService.checkPassword(user, requestDto.getCurrentPassword());
+        passwordCheckService.checkNewPassword(requestDto.getNewPassword(), requestDto.getConfirmPassword());
+
+        userService.updatePassword(user.getUserId(), requestDto.getNewPassword());
+        return ApiResponse.of(SuccessStatus._OK, "비밀번호가 변경되었습니다.");
+    }
 
 
 }
