@@ -1,10 +1,14 @@
 package com.example.week9.service.user;
 
+import com.example.week9.apiPayload.code.ErrorStatus;
+import com.example.week9.apiPayload.exception.GeneralException;
 import com.example.week9.entity.user.User;
 import com.example.week9.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class PasswordCheckService {
@@ -14,21 +18,19 @@ public class PasswordCheckService {
 
     @Autowired
     private UserRepository userRepository;
-
-//    public boolean checkPassword(String rawPassword) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String username = auth.getName(); // 로그인된 사용자 이름
-//
-//        // 사용자 정보 가져오기
-//        User user = userRepository.findByUserId(username)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        // 입력한 비밀번호와 실제 저장된 해시값 비교
-//        return passwordEncoder.matches(rawPassword, user.getPassword());
-//    }
-    public boolean checkPassword(User user, String rawPassword) {
-        return passwordEncoder.matches(rawPassword, user.getPassword());
+    
+    public void checkPassword(User user, String rawPassword) {
+        boolean match = passwordEncoder.matches(rawPassword, user.getPassword());
+        if (!match) {
+            throw new GeneralException(ErrorStatus.PASSWORD_MISMATCH);
+        }
     }
 
+    public void checkNewPassword(String newPassword, String confirmPassword) {
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new GeneralException(ErrorStatus.PASSWORD_CONFIRM_MISMATCH);
+        }
+    }
 
 }

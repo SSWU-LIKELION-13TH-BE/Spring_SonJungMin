@@ -41,7 +41,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // ExistsUserException 처리
+//     ExistsUserException 처리
 //    @ExceptionHandler(ExistsUserException.class)
 //    public ResponseEntity<ApiResponse<Object>> handleCustomException(ExistsUserException e) {
 //        ErrorReasonDTO reason = e.getErrorReasonHttpStatus();
