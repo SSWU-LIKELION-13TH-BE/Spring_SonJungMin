@@ -37,7 +37,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/test/**", "/api/users/**","/api/auth/**", "/api/calculator/**").permitAll()
+                        .requestMatchers("/test/**", "/api/users/**","/api/auth/**", "/api/calculator/**", "/api/board/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);  // UserDetailsService 사용

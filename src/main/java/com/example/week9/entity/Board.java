@@ -1,6 +1,7 @@
 package com.example.week9.entity;
 //import ...
 
+import com.example.week9.converter.ImageListConverter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,12 +40,13 @@ public class Board {
     @PrePersist //jpa의 콜백 메서드. 엔터티가 처음 저장되기 직전에 실행. 즉, 새로운 row 생성시 현재 날짜 저장
     protected void onCreate() { this.postDate = LocalDate.now(); }
 
-    @Column
-    private String image;
+//    @Column
+//    private String image;
+    @Column(columnDefinition = "TEXT")  // DB에선 JSON 문자열로 저장됨
+    @Convert(converter = ImageListConverter.class)
+    private List<String> image;
 
-//    @OneToMany
-//    @JoinColumn(name = "comment_id")
-//    private Comment comment;
+
 
     @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @OrderBy(value = "createdDate asc") // 댓글 정렬
