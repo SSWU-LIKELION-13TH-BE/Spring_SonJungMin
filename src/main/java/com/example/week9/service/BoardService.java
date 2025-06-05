@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,27 +42,6 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-
-//    @Transactional
-//    public void deleteBoard(Long boardId) {
-//        boardRepository.deleteByBoardId(boardId);
-//    }
-
-//    @Transactional
-//    public void deleteUpload(Long boardId) {
-//        Board board = boardRepository.findById(boardId)
-//                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
-//
-//        // S3 이미지 삭제
-//        if (board.getImageFileName() != null) {
-//            s3Service.deleteFile(board.getImageFileName());
-//        }
-//
-//        // 게시글 삭제
-//        boardRepository.delete(board);
-//    }
-
-
     @Transactional
     //이미지 포함 게시글 생성
     public void ImageBoard(BoardDTO request) throws IOException {
@@ -72,7 +52,7 @@ public class BoardService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .writer(request.getWriter())
-                .image(savedImageURI)
+                .image(List.of(savedImageURI))
                 .build();
 
         boardRepository.save(board);
@@ -83,8 +63,17 @@ public class BoardService {
         Board board = boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
 
-        String fileName = board.getImage();
-        return s3Service.getFileUrl(fileName);
+        //원래 이미지파일이 String일 때 사용하던 코드
+//        String fileName = board.getImage();
+//        return s3Service.getFileUrl(fileName);
+
+        //여긴 JSON 형식으로 바꾼 후 사용하는 코드
+        List<String> images = board.getImage();
+        if (images != null && !images.isEmpty()) {
+            return s3Service.getFileUrl(images.get(0)); // 첫 번째 이미지 반환
+        } else {
+            return null; // 또는 기본 URL 반환
+        }
     }
 
     @Transactional
@@ -93,8 +82,16 @@ public class BoardService {
         Board board = boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
 
-        if(board.getImage() != null && !board.getImage().isEmpty()) {
-            s3Service.deleteFile(board.getImage());
+        //원래 이미지파일이 String일 때 사용하던 코드
+//        if(board.getImage() != null && !board.getImage().isEmpty()) {
+//            s3Service.deleteFile(board.getImage());
+//        }
+
+        //여긴 JSON 형식으로 바꾼 후 사용하는 코드
+        if (board.getImage() != null && !board.getImage().isEmpty()) {
+            for (String fileName : board.getImage()) {
+                s3Service.deleteFile(fileName); // ✅ 여러 이미지 삭제
+            }
         }
 
         boardRepository.deleteByBoardId(boardId);

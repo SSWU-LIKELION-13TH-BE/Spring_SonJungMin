@@ -10,10 +10,4 @@ public class UserResponseDTO {
     private String userId;
     private String name;
     private String profileImage;
-
-    public UserResponseDTO(Long id, String username, String email) {
-        this.userId = userId;
-        this.name = name;
-        this.profileImage = profileImage;
-    }
 }
